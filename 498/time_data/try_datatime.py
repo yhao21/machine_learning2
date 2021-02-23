@@ -76,6 +76,30 @@ print(dataset['diff'])
 
 
 
+## count # of crime within a time slot
+## start from 0, end with 95, step = 1
+## there are 96 15-mins in a day
+time_block_dataset = pd.DataFrame()
+time_block_dataset['time_in_day'] = np.arange(0,96,1)
+print(time_block_dataset)
+
+## check if there are crimes happening during midnight (first 15 mins)
+crime_counts = np.sum(dataset['minutes_slot_in_date'] == 0)
+print(crime_counts)
+
+'''
+trick:
+    you can convert True and False to 1 and 0 by multiply the upper code by 1
+'''
+print((dataset['minutes_slot_in_date'] == 0)*1)
+
+
+
+
+
+
+
+
 
 
 
