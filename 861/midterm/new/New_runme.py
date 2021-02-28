@@ -151,7 +151,8 @@ class CleanData():
             if r2_sign == 1:
                 results.append(metrics.r2_score(target_test,prediction))
         
-        print(model_name, results)
+        #print(model_name, results)
+        return [model_name, results]
 
 
 
@@ -172,23 +173,23 @@ if __name__ == '__main__':
     #===========
     ## step2: select model for price machine(data with price range dummy)
 
-    #df = pd.read_csv('full_clean_dataset.csv')
-    #df = CleanData(df).make_dummies(['price_range'])
+    df = pd.read_csv('full_clean_dataset.csv')
+    df = CleanData(df).make_dummies(['price_range'])
 
     #machine = linear_model.LinearRegression()
-    #CleanData(df).model_selection(4,machine,'linear',r2_sign = 1)
+    #results = CleanData(df).model_selection(4,machine,'linear',r2_sign = 1)
     '''
     result:linear [0.502478944728638, 0.5404731004593971, 0.6459142809679543, 0.6697080012391131]
     '''
 
-    #machine = linear_model.Lasso(alpha = 0.001, normalize=True)
-    #CleanData(df).model_selection(4,machine,'lasso',r2_sign = 1)
+    machine = linear_model.Lasso(alpha = 0.001, normalize=True)
+    results = CleanData(df).model_selection(4,machine,'lasso',r2_sign = 1)
     '''
     result: lasso [0.5023062458401142, 0.5404972388602172, 0.6459522423365893, 0.6700360429637205]
     '''
 
     #machine = linear_model.Ridge(alpha = 0.001, normalize=True)
-    #CleanData(df).model_selection(4,machine,'ridge',r2_sign = 1)
+    #results = CleanData(df).model_selection(4,machine,'ridge',r2_sign = 1)
     '''
     result:ridge [0.5023568942683851, 0.5404858720767283, 0.6459522567396866, 0.6698815602010382]
     '''
@@ -205,39 +206,80 @@ if __name__ == '__main__':
     #===========
     ## step3: train PriceRange machine
 
+    ## hyperparameters
     #df = pd.read_csv('full_clean_dataset.csv').drop(['price'], axis = 1)
+    #results_list = []
+    #for tree in range(7,30):
+    #    for depth in range(8,30):
+    #        machine = RandomForestClassifier(criterion= 'gini',n_estimators=tree, max_depth=depth, n_jobs=-1)
+    #        machine_name = 'RF tree:%d depth:%d' % (tree, depth)
+    #        results = CleanData(df).model_selection(4,machine,machine_name, acc_sign = 1)
+    #        results_list.append(results)
+    #        print(results)
 
-    #machine = RandomForestClassifier(criterion= 'gini',n_estimators=9, max_depth=10, n_jobs=-1)
-    #CleanData(df).model_selection(4,machine,'RF', acc_sign = 1)
-    '''
-    result:RF [0.6567071914279827, 0.6892323544564657, 0.6907779495105616, 0.6501803194229778]
-    '''
-    
-    #machine = linear_model.LogisticRegression(multi_class='multinomial',n_jobs=-1,max_iter=5000)
-    #CleanData(df).model_selection(4,machine,'logit', acc_sign = 1)
+    #
+    #r2_series_x1 = []
+    #r2_series_x2 = []
+    #r2_series_x3 = []
+    #r2_series_x4 = []
+    #index_checklist = []
+    #placement = 1
+
+    #for item in results_list:
+    #    model_parameter = item[0]
+    #    x1 = item[1][0]     # first r2_score
+    #    x2 = item[1][1]     # second r2_score
+    #    x3 = item[1][2]     # third r2_score
+    #    x4 = item[1][3]     # forth r2_score
+    #    r2_series_x1.append(x1)
+    #    r2_series_x2.append(x2)
+    #    r2_series_x3.append(x3)
+    #    r2_series_x4.append(x4)
+    #    #index_checklist.append([placement, model_parameter])
+    #    index_checklist.append(item)
+    #    placement += 1
+    #grid_search_results = pd.DataFrame(index_checklist)
+    #grid_search_results.to_csv('RF_grid_search_results.csv')
+    #print(grid_search_results)
+
+    #horizontal_values = [i for i in range(1,len(r2_series_x1)+1)]
+    #plt.plot(horizontal_values, r2_series_x1, c = 'red', label = 'x1')
+    #plt.plot(horizontal_values, r2_series_x2, c = 'green', label = 'x2')
+    #plt.plot(horizontal_values, r2_series_x3, c = 'blue', label = 'x3')
+    #plt.plot(horizontal_values, r2_series_x4, c = 'yellow', label = 'x4')
+    #plt.legend(loc = 'lower right')
+    #plt.savefig('R2_trend.png')
 
 
-    # save PriceRange machine
 
+
+    #===========
+    ## step4: Save PriceRange machine
+
+    #df = pd.read_csv('full_clean_dataset.csv').drop(['price'], axis = 1)
+    #machine = RandomForestClassifier(criterion= 'gini',n_estimators=16, max_depth=11, n_jobs=-1)
+    #results = CleanData(df).model_selection(4,machine,'RF', acc_sign = 1)
+    #
     #with open('PriceRange_machine.pickle','wb') as g:
     #    pickle.dump(machine,g)
 
 
 
     #===========
-    ## step4: Test machines
+    ## step5: Test machines
     '''
     Use NYC clean data, and drop price and price_range col. Then predict
     price_range, merge it to main df and use this new df predict price level, and
     then verify r2_score
     '''
     ##~~~~## sample test
+
     df = pd.read_csv('full_clean_dataset.csv')
     col_name = df.columns.tolist()
     # remove price and price_range
     del col_name[:2]
-    true_target = df.iloc[:5000,0].values
-    data = df.iloc[:5000,2:].values
+    true_target = df.iloc[:7000,0].values
+    data = df.iloc[:7000,2:].values
     
     
     with open('PriceRange_machine.pickle','rb') as f:
@@ -245,8 +287,11 @@ if __name__ == '__main__':
     price_range = pd.DataFrame(PriceRange_machine.predict(data), columns = ['price_range'])
     rest_VR = pd.DataFrame(data, columns = col_name)
     data = pd.concat([price_range,rest_VR], axis = 1)
+
+
     # don't forget to convert price_range to dummies
     data = CleanData(data).make_dummies(['price_range']).iloc[:,:].values
+
     
     with open('price_model.pickle', 'rb') as g:
         Price_machine = pickle.load(g)
@@ -254,6 +299,7 @@ if __name__ == '__main__':
     price_prediction = Price_machine.predict(data)
     R2 = metrics.r2_score(true_target, price_prediction)
     print(R2)
+    ###0.20431871650326194
      
      
      
@@ -263,34 +309,6 @@ if __name__ == '__main__':
 
 
 
-
-
-
-
-
-    ##~~~~## full dataset test
-    #df = pd.read_csv('full_clean_dataset.csv')
-    #col_name = df.columns.tolist()
-    ## remove price and price_range
-    #del col_name[:2]
-    #true_target = df.iloc[:,0].values
-    #data = df.iloc[:,2:].values
-
-
-    #with open('PriceRange_machine.pickle','rb') as f:
-    #    PriceRange_machine = pickle.load(f)
-    #price_range = pd.DataFrame(PriceRange_machine.predict(data), columns = ['price_range'])
-    #rest_VR = df.drop(['price', 'price_range'], axis = 1)
-    #data = pd.concat([price_range,rest_VR], axis = 1)
-    ## don't forget to convert price_range to dummies
-    #data = CleanData(data).make_dummies(['price_range']).iloc[:,:].values
-
-    #with open('price_model.pickle', 'rb') as g:
-    #    Price_machine = pickle.load(g)
-
-    #price_prediction = Price_machine.predict(data)
-    #R2 = metrics.r2_score(true_target, price_prediction)
-    #print(R2)
 
 
 
