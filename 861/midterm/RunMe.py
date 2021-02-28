@@ -7,7 +7,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import confusion_matrix
 from sklearn import linear_model
 from math import radians
-
+from matplotlib import pyplot as plt
 
 df = pd.read_csv('AB_NYC_2019.csv')
 
@@ -31,17 +31,9 @@ df_indexing = df_missing[(df_missing.last_review == True) | (df_missing.reviews_
 #print(df_indexing)
 ## delete these rows
 df = df.drop(index = df_indexing)
-
-
-print(df)
-
-print(df.columns.tolist())
-
 df = df[['price','neighbourhood_group','latitude', 'longitude', 'room_type','minimum_nights', 'number_of_reviews', 'last_review', 'reviews_per_month', 'calculated_host_listings_count', 'availability_365']]
-target = df['price'].values
 
-print(df)
-print(df['room_type'])
+
 
 ####=================
 #### use 2021/02/24 as base, compute how long (days) there's no new review.
@@ -49,6 +41,7 @@ now_date = datetime(2021,2,24)
 df['Date'] = pd.to_datetime(df['last_review'])
 df['last_review_date_diff'] = -(df['Date'] - now_date).apply(lambda x: x.days)
 print(df)
+
 
 
 ####=================
@@ -78,33 +71,66 @@ df['distance_from_empire'] = df.apply(get_haversine, axis = 1)
 print(df)
 
 
+
 ####====================
 #### get dummies
 room_dummies = pd.get_dummies(df['room_type'])
 neighbour_dummies = pd.get_dummies(df['neighbourhood_group'])
-print(neighbour_dummies)
+mini_nights_dummies = pd.get_dummies(df['minimum_nights'])
+review_num_dummies = pd.get_dummies(df['number_of_reviews'])
+host_list_dummies = pd.get_dummies(df['calculated_host_listings_count'])
+availa_365_dummies = pd.get_dummies(df['availability_365'])
 
 
 
 ####====================
 #### get clean df
-print(df.columns.tolist())
+
+#clean_df = df.drop(['neighbourhood_group','room_type', 'last_review', 'latitude', 'longitude',\
+#        'Date'], axis = 1)
 clean_df = df.drop(['neighbourhood_group','room_type', 'last_review', 'latitude', 'longitude',\
-        'Date'], axis = 1)
+        'Date','minimum_nights','calculated_host_listings_count','availability_365'], axis = 1)
+
+#clean_df = pd.concat([
+#    clean_df,
+#    room_dummies,
+#    neighbour_dummies], axis = 1)
+
+
 clean_df = pd.concat([
     clean_df,
     room_dummies,
-    neighbour_dummies], axis = 1)
-
-
+    neighbour_dummies,
+    mini_nights_dummies,
+    host_list_dummies,
+    availa_365_dummies
+    ], axis = 1)
 print(clean_df)
 
+
+####================
+#### plot graph of price and each x variable. Determine if need polynomial terms
+
+#price = clean_df.iloc[:,0].values
+#x_variable = ['minimum_nights','number_of_reviews', 'reviews_per_month', 'calculated_host_listings_count',\
+#        'availability_365', 'last_review_date_diff', 'distance_from_empire']
+#
+#for item in x_variable:
+#    x = clean_df[item].values
+#    plt.scatter(x, price)
+#    plt.savefig('plot_'+item+'.png')
+#    plt.clf()
+#
+#
+
+
+print(clean_df.columns.tolist())
 
 target = clean_df.iloc[:, 0].values
 data = clean_df.iloc[:, 1:].values
 
 #machine = linear_model.Ridge(alpha = 0.001, normalize=True)
-machine = linear_model.Lasso(alpha = 0.001, normalize=True)
+machine = linear_model.Lasso(alpha = 0.0001, normalize=True)
 #machine = linear_model.LinearRegression()
 
 

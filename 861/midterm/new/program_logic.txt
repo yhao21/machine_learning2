@@ -1,0 +1,18 @@
+
+
+   make clean data										     make clean data
+(with price and range)						 		     (without price)
+				|															     			|
+				|                                       |
+     train machine(price machine)			train machine(PriceRange machine)
+(with price range in data)							(predict price range)
+
+
+
+get actual data(without price and price range)
+
+predict price range using PriceRange machine
+
+merge predict price range to actual data (new df)
+
+predict price with new df by using price machine
