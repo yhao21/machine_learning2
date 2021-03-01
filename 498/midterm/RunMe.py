@@ -129,7 +129,7 @@ class CleanData():
         else:
             self.make_dummies()
             self.df.to_csv('CleanData_without_crime_count.csv', index = False)
-        print(self.df)
+        #print(self.df)
         #self.model_selection_process()
 
 
@@ -208,8 +208,7 @@ class CleanData():
             sub_row_append = self.district_crime_pre_df[one_district_indexing]
             self.full_district_type.append(sub_row_append)
         self.full_district_type = pd.DataFrame(self.full_district_type)
-        #self.full_district_type = self.full_district_type.drop(index = 0, axis = 1)
-        print(self.full_district_type)
+        #print(self.full_district_type)
 
 
 
@@ -228,8 +227,6 @@ class CleanData():
 
 
     def make_dummies(self):
-        print(self.dummy_list)
-        print(self.df.columns.tolist())
         for item in self.dummy_list:
             dummy_col = pd.get_dummies(self.df[item])
             self.df = pd.concat([self.df,dummy_col], axis = 1)
@@ -239,22 +236,22 @@ class CleanData():
 
 
     def model_selection_process(self,models):
-        print(self.df)
         target = self.df['Primary Type'].astype('category')
         ## convert categories to numbers
         checklist_col = target.cat.categories.tolist()
         target = target.cat.rename_categories([i for i in range(len(target.cat.categories.tolist()))])
         content = target.cat.categories.values
         self.crime_type_checklist = pd.DataFrame(content.reshape(1,len(content)), columns = checklist_col)
-        print(self.crime_type_checklist)
+        #print(self.crime_type_checklist)
         self.crime_type_checklist.to_csv('Primary_type_checklist.csv')
 
-        #self.target = np.array(target.values)
-        #self.data = self.df.iloc[:,1:].values
+        self.target = np.array(target.values)
+        self.data = self.df.iloc[:,1:].values
 
 
-        self.target = np.array(target.values)[:1000]
-        self.data = self.df.iloc[:1000,1:].values
+        # test
+        #self.target = np.array(target.values)[:1000]
+        #self.data = self.df.iloc[:1000,1:].values
 
 
         if models == 'RF':
@@ -369,12 +366,16 @@ if __name__ == '__main__':
 
     #=================
     # Step 5 Model Selection
-    df = pd.read_csv('CleanData_without_crime_count.csv')
+    #df = pd.read_csv('CleanData_without_crime_count.csv')
     #CleanData(df).model_selection_process('RF')
     #CleanData(df).model_selection_process('logit')
+    #CleanData(df).model_selection_process('SVM')
+
+
+    df = pd.read_csv('CleanData_with_crime_count.csv')
+    CleanData(df).model_selection_process('RF')
+    CleanData(df).model_selection_process('logit')
     CleanData(df).model_selection_process('SVM')
-
-
 
 
 
