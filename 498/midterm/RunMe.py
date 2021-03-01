@@ -249,9 +249,6 @@ class CleanData():
         self.data = self.df.iloc[:,1:].values
 
 
-        # test
-        #self.target = np.array(target.values)[:1000]
-        #self.data = self.df.iloc[:1000,1:].values
 
 
         if models == 'RF':
@@ -260,6 +257,8 @@ class CleanData():
             self.run_svm()
         elif models == 'logit':
             self.run_logit()
+
+        return self.results
 
 
     def run_logit(self):
@@ -283,12 +282,22 @@ class CleanData():
 
     def run_random_forest(self):
 
-        for ker in ['gini', 'entropy']:
+        self.results = []
+        indexing = 0
+        for n_trees in [5,10,15,20,30,40,50,60,70,80,120,160,200]:
             for n_depth in [5,10,20,30,40,50,60,70,80]:
-                for n_trees in [5,10,15,20,30,40,50,60,70,80,120,160,200]:
-                    machine = RandomForestClassifier(criterion=ker,max_depth=n_depth,n_estimators=n_trees,n_jobs=-1)
-                    self.run_kfold(4,machine)
-                    print(ker, n_depth, n_trees, self.acc_list)
+        #for n_trees in [5,10]:
+        #   for n_depth in [5,10,15]:
+               machine = RandomForestClassifier(criterion='gini',max_depth=n_depth,n_estimators=n_trees,n_jobs=-1)
+               self.run_kfold(4,machine)
+               #print(ker, n_depth, n_trees, self.acc_list)
+               regression_info = [indexing, n_trees, n_depth, self.acc_list]
+               self.results.append(regression_info)
+               print(regression_info)
+               indexing += 1
+        self.results_df = pd.DataFrame(self.results, columns = ['Index','Trees','Depth','Acc_rate'])
+        self.results_df.to_csv('RF_grid_search_results.csv', index = False)
+
 
         
 
@@ -316,6 +325,33 @@ class CleanData():
     
             self.acc_list.append(metrics.accuracy_score(target_test,prediction))
 
+
+
+def plot_acc_trend(results_list, figure_name):
+    r2_series_x1 = []
+    r2_series_x2 = []
+    r2_series_x3 = []
+    r2_series_x4 = []
+
+    for item in results_list:
+        model_parameter = item[0]
+        x1 = item[3][0]     # first r2_score
+        x2 = item[3][1]     # second r2_score
+        x3 = item[3][2]     # third r2_score
+        x4 = item[3][3]     # forth r2_score
+        r2_series_x1.append(x1)
+        r2_series_x2.append(x2)
+        r2_series_x3.append(x3)
+        r2_series_x4.append(x4)
+        #index_checklist.append([placement, model_parameter])
+
+    horizontal_values = [i for i in range(1,len(r2_series_x1)+1)]
+    plt.plot(horizontal_values, r2_series_x1, c = 'red', label = 'x1')
+    plt.plot(horizontal_values, r2_series_x2, c = 'green', label = 'x2')
+    plt.plot(horizontal_values, r2_series_x3, c = 'blue', label = 'x3')
+    plt.plot(horizontal_values, r2_series_x4, c = 'yellow', label = 'x4')
+    plt.legend(loc = 'lower right')
+    plt.savefig(figure_name)
 
 if __name__ == '__main__':
 
@@ -366,16 +402,20 @@ if __name__ == '__main__':
 
     #=================
     # Step 5 Model Selection
-    #df = pd.read_csv('CleanData_without_crime_count.csv')
-    #CleanData(df).model_selection_process('RF')
-    #CleanData(df).model_selection_process('logit')
-    #CleanData(df).model_selection_process('SVM')
+    df = pd.read_csv('CleanData_without_crime_count.csv')
+    results=CleanData(df).model_selection_process('RF')
+    figure_name = 'acc_trend_RF_without_crime_count.png'
+    plot_acc_trend(results, figure_name)
+    #results=CleanData(df).model_selection_process('logit')
+    #results=CleanData(df).model_selection_process('SVM')
 
 
-    df = pd.read_csv('CleanData_with_crime_count.csv')
-    CleanData(df).model_selection_process('RF')
-    CleanData(df).model_selection_process('logit')
-    CleanData(df).model_selection_process('SVM')
+    #df = pd.read_csv('CleanData_with_crime_count.csv')
+    #results = CleanData(df).model_selection_process('RF')
+    #figure_name = 'acc_trend_RF_with_crime_count.png'
+    #plot_acc_trend(results, figure_name)
+    #results = CleanData(df).model_selection_process('logit')
+    #results = CleanData(df).model_selection_process('SVM')
 
 
 
