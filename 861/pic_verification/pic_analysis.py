@@ -1,6 +1,8 @@
 import pandas as pd
 import imageio, glob, os, re
 import numpy as np
+from sklearn.mixture import GaussianMixture as gmm
+import matplotlib.pyplot as plt
 
 
 
@@ -46,5 +48,32 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(df_list, columns = ['R', 'G', 'B', 'name'])
     print(df)
+
+
+    x1 = df.iloc[:, 0].values
+    x2 = df.iloc[:, 1].values
+    x3 = df.iloc[:, 2].values
+    plt.plot(x1, x2, '.')
+    plt.savefig('color_x1_x2.png')
+    plt.clf()
+
+    plt.plot(x1, x3, '.')
+    plt.savefig('color_x1_x3.png')
+    plt.clf()
+
+
+    plt.plot(x2, x3, '.')
+    plt.savefig('color_x2_x3.png')
+    plt.clf()
+
+
+
+
+
+
+
+
+
+
     
     
