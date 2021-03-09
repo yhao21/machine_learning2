@@ -173,8 +173,8 @@ if __name__ == '__main__':
     #===========
     ## step2: select model for price machine(data with price range dummy)
 
-    df = pd.read_csv('full_clean_dataset.csv')
-    df = CleanData(df).make_dummies(['price_range'])
+    #df = pd.read_csv('full_clean_dataset.csv')
+    #df = CleanData(df).make_dummies(['price_range'])
 
     #machine = linear_model.LinearRegression()
     #results = CleanData(df).model_selection(4,machine,'linear',r2_sign = 1)
@@ -182,8 +182,8 @@ if __name__ == '__main__':
     result:linear [0.502478944728638, 0.5404731004593971, 0.6459142809679543, 0.6697080012391131]
     '''
 
-    machine = linear_model.Lasso(alpha = 0.001, normalize=True)
-    results = CleanData(df).model_selection(4,machine,'lasso',r2_sign = 1)
+    #machine = linear_model.Lasso(alpha = 0.001, normalize=True)
+    #results = CleanData(df).model_selection(4,machine,'lasso',r2_sign = 1)
     '''
     result: lasso [0.5023062458401142, 0.5404972388602172, 0.6459522423365893, 0.6700360429637205]
     '''
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     #plt.plot(horizontal_values, r2_series_x3, c = 'blue', label = 'x3')
     #plt.plot(horizontal_values, r2_series_x4, c = 'yellow', label = 'x4')
     #plt.legend(loc = 'lower right')
-    #plt.savefig('R2_trend.png')
+    #plt.savefig('acc_trend.png')
 
 
 
