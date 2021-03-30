@@ -54,7 +54,3 @@ for training_index, test_index in kfold_obj.split(data):
 
 
 
-
-
-
-

@@ -403,9 +403,10 @@ if __name__ == '__main__':
     #=================
     # Step 5 Model Selection
     df = pd.read_csv('CleanData_without_crime_count.csv')
-    results=CleanData(df).model_selection_process('RF')
-    figure_name = 'acc_trend_RF_without_crime_count.png'
-    plot_acc_trend(results, figure_name)
+    print(len(df.columns.tolist()))
+    #results=CleanData(df).model_selection_process('RF')
+    #figure_name = 'acc_trend_RF_without_crime_count.png'
+    #plot_acc_trend(results, figure_name)
     #results=CleanData(df).model_selection_process('logit')
     #results=CleanData(df).model_selection_process('SVM')
 
