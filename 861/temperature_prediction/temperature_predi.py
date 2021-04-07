@@ -6,6 +6,7 @@ from sklearn import metrics
 from matplotlib import pyplot as plt
 from sklearn.tree import export_graphviz
 from sklearn import tree
+from graphviz import Source
 
 
 
@@ -126,11 +127,37 @@ sklearn save your trees into a file, and you need graphviz to ploy the tree grap
 
 RF_estimator = machine.estimators_
 for item in RF_estimator:
-  print(item)
-  export_graphviz(item, out_file = 'tree.dot', feature_names=feature_list,rounded=True, proportion=False, precision=2, filled=True)
+    print(item)
 
 
 
-fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(6,6),dpi = 800)
+fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(9,9),dpi = 800)
 tree.plot_tree(RF_estimator[0],feature_names=feature_list, filled = True)
-fig.savefig('rf_individualtree.png')
+fig.savefig('rf_individualtree_.png')
+
+
+### plt Method (plot all)
+#indexing = 0
+#for sburegressor in RF_estimator:
+#    fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(6,6),dpi = 800)
+#    tree.plot_tree(RF_estimator[indexing],feature_names=feature_list, filled = True)
+#    fig.savefig('rf_individualtree_ %d.png'% indexing)
+#    indexing += 1
+
+
+
+
+
+
+
+### Graphviz method:
+#graph = Source(export_graphviz(RF_estimator[0], out_file = 'tree.dot', feature_names=feature_list,rounded=True, proportion=False, precision=2, filled=True))
+#png_source = graph.pipe(format='png')
+#with open('mytrees.png','wb')as f:
+#    f.write(png_source)
+#
+#
+
+
+
+
