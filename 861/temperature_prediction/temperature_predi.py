@@ -5,6 +5,7 @@ from sklearn.model_selection import KFold
 from sklearn import metrics
 from matplotlib import pyplot as plt
 from sklearn.tree import export_graphviz
+from sklearn import tree
 
 
 
@@ -101,27 +102,35 @@ the historical average of today's temperature.
 
 print(feature_importances_raw)
 
-x_values = list(range(len(feature_importances_raw)))
-print(x_values)
-## label x axis
-## rotation ask plt show feature name vertically
-plt.xticks(x_values, feature_list, rotation = 'vertical')
-
-plt.ylabel('importance')
-plt.xlabel('features')
-plt.title('Feature Importance')
-## it will fit the picture size to its content
-## you won't have any words out of the figure
-plt.tight_layout()
-
-
-plt.bar(x_values, feature_importances_raw, orientation = 'vertical')
-plt.show()
-
+#x_values = list(range(len(feature_importances_raw)))
+#print(x_values)
+### label x axis
+### rotation ask plt show feature name vertically
+#plt.xticks(x_values, feature_list, rotation = 'vertical')
+#
+#plt.ylabel('importance')
+#plt.xlabel('features')
+#plt.title('Feature Importance')
+### it will fit the picture size to its content
+### you won't have any words out of the figure
+#plt.tight_layout()
+#
+#
+#plt.bar(x_values, feature_importances_raw, orientation = 'vertical')
+#plt.show()
+#
 '''
 sklearn save your trees into a file, and you need graphviz to ploy the tree graph
 '''
 
 
+RF_estimator = machine.estimators_
+for item in RF_estimator:
+  print(item)
+  export_graphviz(item, out_file = 'tree.dot', feature_names=feature_list,rounded=True, proportion=False, precision=2, filled=True)
 
 
+
+fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(6,6),dpi = 800)
+tree.plot_tree(RF_estimator[0],feature_names=feature_list, filled = True)
+fig.savefig('rf_individualtree.png')
