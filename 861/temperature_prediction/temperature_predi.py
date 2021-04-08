@@ -5,9 +5,9 @@ from sklearn.model_selection import KFold
 from sklearn import metrics
 from matplotlib import pyplot as plt
 from sklearn.tree import export_graphviz
-from sklearn import tree
-from graphviz import Source
-
+#from sklearn import tree
+#from graphviz import Source
+import pydot
 
 
 
@@ -125,16 +125,30 @@ sklearn save your trees into a file, and you need graphviz to ploy the tree grap
 '''
 
 
+'''
+When your RF is very complicated, plotting the graph may not be helpful to detect
+weird outcome. 
+
+Try to print features_importance for each estimator can be a good method.
+each estimator stands for a tree in the forest.
+e.g.,
+for each_estimator in machine.estimators_:
+    do the features_importance
+
+'''
+
+
+
 RF_estimator = machine.estimators_
 for item in RF_estimator:
     print(item)
 
 
 
-fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(9,9),dpi = 800)
-tree.plot_tree(RF_estimator[0],feature_names=feature_list, filled = True)
-fig.savefig('rf_individualtree_.png')
-
+#fig,axes = plt.subplots(nrows=1,ncols=1,figsize=(9,9),dpi = 800)
+#tree.plot_tree(RF_estimator[0],feature_names=feature_list, filled = True)
+#fig.savefig('rf_individualtree_.png')
+#
 
 ### plt Method (plot all)
 #indexing = 0
@@ -157,6 +171,33 @@ fig.savefig('rf_individualtree_.png')
 #    f.write(png_source)
 #
 #
+
+
+
+
+### Tom's Graphviz method
+
+
+
+
+
+
+tree = machine.estimators_[4]
+export_graphviz(tree, out_file='tomtree.dot', feature_names=feature_list,precision=1)
+
+(graph, ) = pydot.graph_from_dot_file('tomtree.dot')
+graph.write_png = ('tomtree.png')
+print('end')
+
+
+
+
+
+
+
+
+
+
 
 
 
